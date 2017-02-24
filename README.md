@@ -1,7 +1,21 @@
 # Ansible Playbook Docker Image
 
+<!-- MarkdownTOC -->
 
-## Build
+- [1- Build](#1--build)
+- [2 - Run](#2---run)
+  - [Basics](#basics)
+  - [SSH Keys](#ssh-keys)
+  - [Ansible Vault](#ansible-vault)
+  - [Testing Playbooks - Ansible Target Container](#testing-playbooks---ansible-target-container)
+  - [Docker Compose](#docker-compose)
+  - [Privileged Operations](#privileged-operations)
+
+<!-- /MarkdownTOC -->
+
+
+
+## 1- Build
 
 * Based on `Alpine Linux`
 * Use the new `ARG` variable from Docker >= 1.10
@@ -18,7 +32,7 @@ http://releases.ansible.com/ansible/
 
 
 
-## Run
+## 2 - Run
 
 Executes `ansible-playbook` command against an externally mounted set of Ansible playbooks.
 
