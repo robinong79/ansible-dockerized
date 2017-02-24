@@ -28,14 +28,15 @@ RUN echo "[local]" >> /etc/ansible/hosts && \
 
 
 # Install Ansible
-ARG ansible_version=2.2.1.0
-
 RUN mkdir -p /ansible/playbooks
 WORKDIR /ansible/playbooks
 
+ARG ansible_version
+ENV ANSIBLE_VERSION ${ansible_version:-2.2.1.0}
+
 RUN \
-  curl -fsSL http://releases.ansible.com/ansible/ansible-${ansible_version}.tar.gz -o ansible.tar.gz && \
-  tar -xzf ansible.tar.gz -C ansible --strip-components 1 && \
+  curl -fsSL "http://releases.ansible.com/ansible/ansible-${ANSIBLE_VERSION}.tar.gz" -o ansible.tar.gz && \
+  tar -xzf ansible.tar.gz -C /ansible --strip-components 1 && \
   rm -fr ansible.tar.gz /ansible/docs /ansible/examples /ansible/packaging
 
 
