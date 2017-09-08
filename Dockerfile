@@ -1,52 +1,57 @@
-FROM gliderlabs/alpine:3.3
+FROM alpine:3.6
 
 
-# Ansible dependencies
+# Default version of Ansible
+ARG ANSIBLE_VERSION=2.2.1.0
+
+
+# == Ansible dependencies
+#
 RUN \
-  apk-install \
+  echo '* Installing OS Dependencies' \
+  && apk add --update --no-cache \
     curl \
     openssh-client \
+    tar \
     python \
-    py-boto \
-    py-dateutil \
-    py-httplib2 \
-    py-jinja2 \
-    py-paramiko \
     py-pip \
-    py-setuptools \
-    py-yaml \
-    tar && \
-  pip install --upgrade pip python-keyczar && \
-  rm -rf /var/cache/apk/*
+    build-base \
+    libffi-dev \
+    openssl-dev \
+    python-dev \
+  && echo '* Installing Ansible via PIP' \
+  && pip install --upgrade \
+    pip \
+    docker-py \
+    ansible==${ANSIBLE_VERSION} \
+  && echo '* Cleaning unneeded packages' \
+  && apk del \
+    build-base \
+    libffi-dev \
+    openssl-dev \
+    python-dev
 
 
+# == Install Ansible
+#
 # Setup Ansible Layout
-RUN mkdir /etc/ansible/ /ansible
+COPY files/hosts /etc/ansible/hosts
 
-RUN echo "[local]" >> /etc/ansible/hosts && \
-    echo "localhost" >> /etc/ansible/hosts
-
-
-# Install Ansible
 RUN mkdir -p /ansible/playbooks
 WORKDIR /ansible/playbooks
 
-ARG ansible_version
-ENV ANSIBLE_VERSION ${ansible_version:-2.2.1.0}
-
-RUN \
-  curl -fsSL "http://releases.ansible.com/ansible/ansible-${ANSIBLE_VERSION}.tar.gz" -o ansible.tar.gz && \
-  tar -xzf ansible.tar.gz -C /ansible --strip-components 1 && \
-  rm -fr ansible.tar.gz /ansible/docs /ansible/examples /ansible/packaging
 
 
-# Configure runtime environment
-ENV ANSIBLE_GATHERING smart
-ENV ANSIBLE_HOST_KEY_CHECKING false
-ENV ANSIBLE_RETRY_FILES_ENABLED false
-ENV ANSIBLE_ROLES_PATH /ansible/playbooks/roles
-ENV ANSIBLE_SSH_PIPELINING True
-ENV PATH /ansible/bin:$PATH
-ENV PYTHONPATH /ansible/lib
+# == Configure runtime environment
+#
+ENV ANSIBLE_GATHERING=smart \
+    ANSIBLE_HOST_KEY_CHECKING=False \
+    ANSIBLE_RETRY_FILES_ENABLED=False \
+    ANSIBLE_ROLES_PATH=/ansible/playbooks/roles \
+    ANSIBLE_SSH_PIPELINING=True
 
-ENTRYPOINT ["ansible-playbook"]
+
+# == Setting Image exec behavior
+#
+ENTRYPOINT ["/usr/bin/ansible-playbook"]
+CMD ["-h"]

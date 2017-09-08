@@ -1,0 +1,16 @@
+#!/usr/bin/env bash
+#
+
+
+# == Vars
+#
+DOCKER_IMAGE='xakra/ansible-dockerized'
+
+
+docker run --rm -it \
+  --net=host \
+  --volume=/var/run/docker.sock:/var/run/docker.sock \
+  --volume=$(pwd):$(pwd) \
+  --workdir=$(pwd) \
+  --name ansible \
+  ${DOCKER_IMAGE} "$@"

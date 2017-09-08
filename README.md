@@ -8,8 +8,7 @@
   - [SSH Keys](#ssh-keys)
   - [Ansible Vault](#ansible-vault)
   - [Testing Playbooks - Ansible Target Container](#testing-playbooks---ansible-target-container)
-  - [Docker Compose](#docker-compose)
-  - [Privileged Operations](#privileged-operations)
+  - [Utils](#utils)
 
 <!-- /MarkdownTOC -->
 
@@ -17,9 +16,14 @@
 
 ## 1- Build
 
+[![Docker Automated build](https://img.shields.io/docker/automated/xakra/ansible-dockerizes.svg)]()
+[![Docker Build Status](https://img.shields.io/docker/build/xakra/ansible-dockerized.svg)]()
+[![Docker Pulls](https://img.shields.io/docker/pulls/xakra/ansible-dockerized.svg)]()
+
+
 * Based on `Alpine Linux`
 * Use the new `ARG` variable from Docker >= 1.10
-* Fetch Ansible from official release website
+* Install Ansible from PyPi
 
 
 ```
@@ -28,7 +32,6 @@ $ docker build . --build-args ansible_version=2.2.1.0
 
 
 https://docs.docker.com/engine/reference/builder/#arg
-http://releases.ansible.com/ansible/
 
 
 
@@ -39,9 +42,9 @@ Executes `ansible-playbook` command against an externally mounted set of Ansible
 ```
 docker run --rm -it \
   -v PATH_TO_LOCAL_PLAYBOOKS_DIR:/ansible/playbooks \
-  philm/ansible_playbook \
-  PLAYBOOK_FILE
-
+  xakra/ansible-dockerized \
+  PLAYBOOK_FILE \
+  <ANY_OPTION>
 ```
 
 
@@ -53,7 +56,7 @@ For example, assuming your project's structure follows best practices, the comma
 ```
 docker run --rm -it \
   -v $(pwd):/ansible/playbooks \
-  philm/ansible_playbook \
+  xakra/ansible-dockerized \
   site.yml
 ```
 
@@ -72,7 +75,7 @@ docker run --rm -it \
     -v ~/.ssh/id_rsa:/root/.ssh/id_rsa \
     -v ~/.ssh/id_rsa.pub:/root/.ssh/id_rsa.pub \
     -v $(pwd):/ansible/playbooks \
-    philm/ansible_playbook site.yml
+    xakra/ansible-dockerized site.yml
 ```
 
 
@@ -84,7 +87,8 @@ If you've encrypted any data using Ansible Vault, you can decrypt during a play 
 docker run --rm -it \
     -v $(pwd):/ansible/playbooks \
     -v ~/.vault_pass.txt:/root/.vault_pass.txt \
-    philm/ansible_playbook site.yml --vault-password-file /root/.vault_pass.txt
+    xakra/ansible-dockerized site.yml \
+    --vault-password-file /root/.vault_pass.txt
 ```
 
 Note: the Ansible Vault executable is embedded in this image. To use it, specify a different entrypoint:
@@ -92,8 +96,8 @@ Note: the Ansible Vault executable is embedded in this image. To use it, specify
 ```
 docker run --rm -it \
   -v $(pwd):/ansible/playbooks \
-  --entrypoint ansible-vault \
-  philm/ansible_playbook encrypt FILENAME
+  --entrypoint /usr/bin/ansible-vault \
+  xakra/ansible-dockerized encrypt FILENAME
 ```
 
 
@@ -126,36 +130,12 @@ docker run --rm -it \
     -v ~/.ssh/id_rsa:/root/.ssh/id_rsa \
     -v ~/.ssh/id_rsa.pub:/root/.ssh/id_rsa.pub \
     -v $(pwd):/ansible/playbooks \
-    philm/ansible_playbook tests.yml -i inventory
+    xakra/ansible-dockerized tests.yml -i inventory
 ```
 
 Note: the SSH key used above should match the one used to run Ansible Target.
 
 
+### Utils
 
-### Docker Compose
-
-An sample `docker-compose.yml` file is in this repo's test directory.
-
-Example:
-
-```
-docker-compose run --rm test remote.yml -i inventory
-```
-
-And if you'd like the ansible_target container to be recreated each time, do:
-
-```
-docker rm -v -f ansible_target
-```
-
-(Eventually Compose will be able to automatically remove services after each run, see https://github.com/docker/compose/issues/2774)
-
-
-
-### Privileged Operations
-
-Notice the `privileged: true` option in the compose file.
-This enables us to better mimic a VM environment and perform operations such as installing the Docker Engine during a playbook run see Docker Reference.
-
-
+Have a look at the `bin/ansible` file
