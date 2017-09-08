@@ -2,7 +2,7 @@ FROM alpine:3.6
 
 
 # Default version of Ansible
-ARG ANSIBLE_VERSION=2.2.1.0
+ARG ANSIBLE_VERSION=2.3.2.0
 
 
 # == Ansible dependencies
