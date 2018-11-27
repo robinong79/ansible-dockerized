@@ -2,7 +2,7 @@ FROM alpine:3.6
 
 
 # Default version of Ansible
-ARG ANSIBLE_VERSION=2.5.2
+ARG ANSIBLE_VERSION=2.7.2
 
 
 # == Ansible dependencies
@@ -22,7 +22,7 @@ RUN \
   && echo '* Installing Ansible via PIP' \
   && pip install --upgrade \
     pip \
-    docker-py \
+    docker \
     ansible==${ANSIBLE_VERSION} \
   && echo '* Cleaning unneeded packages' \
   && apk del \

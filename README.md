@@ -1,6 +1,9 @@
 # Ansible Playbook Docker Image
 
-<!-- MarkdownTOC -->
+
+<!-- START doctoc generated TOC please keep comment here to allow auto update -->
+<!-- DON'T EDIT THIS SECTION, INSTEAD RE-RUN doctoc TO UPDATE -->
+**Table of Contents**  *generated with [DocToc](https://github.com/thlorenz/doctoc)*
 
 - [1- Build](#1--build)
 - [2 - Run](#2---run)
@@ -10,7 +13,7 @@
   - [Testing Playbooks - Ansible Target Container](#testing-playbooks---ansible-target-container)
   - [Utils](#utils)
 
-<!-- /MarkdownTOC -->
+<!-- END doctoc generated TOC please keep comment here to allow auto update -->
 
 
 
@@ -21,9 +24,9 @@
 [![Docker Pulls](https://img.shields.io/docker/pulls/xakra/ansible-dockerized.svg)]()
 
 
-* Based on `Alpine Linux`
+* Based on [`Alpine Linux`](https://hub.docker.com/_/alpine/)
 * Use the new `ARG` variable from Docker >= 1.10
-* Install Ansible from PyPi
+* Installs Ansible from [PyPi](https://pypi.org/project/ansible/)
 
 
 ```
