@@ -1,14 +1,13 @@
 FROM alpine:3.6
 
 
-# Default version of Ansible
-ARG ANSIBLE_VERSION=2.7.2
-
-
 # == Setup container
 #
-ENTRYPOINT ["/usr/bin/ansible-playbook"]
-CMD ["-h"]
+# Setup Ansible Layout
+COPY files/hosts /etc/ansible/hosts
+
+RUN mkdir -p /ansible/playbooks
+WORKDIR /ansible/playbooks
 
 
 # == Configure runtime environment
@@ -19,14 +18,14 @@ ENV ANSIBLE_GATHERING=smart \
     ANSIBLE_ROLES_PATH=/ansible/playbooks/roles \
     ANSIBLE_SSH_PIPELINING=True
 
-# Setup Ansible Layout
-COPY files/hosts /etc/ansible/hosts
 
-RUN mkdir -p /ansible/playbooks
-WORKDIR /ansible/playbooks
+# == Setting Image exec behavior
+#
+ENTRYPOINT ["/usr/bin/ansible-playbook"]
+CMD ["-h"]
 
 
-# == Install Ansible dependencies
+# == Install Ansible
 #
 RUN \
   echo '* Installing OS Dependencies' \
@@ -35,13 +34,15 @@ RUN \
     curl openssh-client tar \
     python python-dev py-pip \
     libffi-dev openssl-dev \
+    git \
   && echo '* Installing Ansible via PIP' \
   && pip install --upgrade \
     pip \
     docker \
-    ansible==${ANSIBLE_VERSION} \
+    git+https://github.com/ansible/ansible.git@devel \
   && echo '* Cleaning unneeded packages' \
   && apk del \
     build-base \
     libffi-dev openssl-dev \
-    python-dev
+    python-dev \
+    git

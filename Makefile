@@ -1,11 +1,20 @@
 all: help
 
+
 .PHONY: build
-build: ## Builds all the dockerfiles in the repository.
-	./scripts/build.sh
+build: build-stable build-devel ## Run all build-* rules
+
+.PHONY: build-stable
+build-stable: ## Build latest Ansible stable release
+	./scripts/build-stable.sh
+
+.PHONY: build-devel
+build-devel: ## Build devel Ansible from Git
+	./scripts/build-devel.sh
+
 
 .PHONY: push
-push: ## Runs the tests on the repository.
+push: ## Push builded images
 	./scripts/push.sh
 
 # .PHONY: latest-versions
