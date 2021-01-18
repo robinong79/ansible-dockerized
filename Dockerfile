@@ -2,7 +2,7 @@ FROM alpine:3.6
 
 
 # Default version of Ansible
-ARG ANSIBLE_VERSION=2.7.2
+ARG ANSIBLE_VERSION=2.7.9
 
 
 # == Setup container
@@ -33,7 +33,7 @@ RUN \
   && apk add --update --no-cache \
     build-base \
     curl openssh-client tar \
-    python python-dev py-pip \
+    python python-dev cryptography py-pip \
     libffi-dev openssl-dev \
   && echo '* Installing Ansible via PIP' \
   && pip install --upgrade \
